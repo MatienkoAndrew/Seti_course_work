@@ -3,6 +3,7 @@
 import io
 import time
 import sys
+# from ft_serial_1 import Serial
 PARITY_NONE, PARITY_EVEN, PARITY_ODD, PARITY_MARK, PARITY_SPACE = 'N', 'E', 'O', 'M', 'S'
 STOPBITS_ONE, STOPBITS_ONE_POINT_FIVE, STOPBITS_TWO = (1, 1.5, 2)
 FIVEBITS, SIXBITS, SEVENBITS, EIGHTBITS = (5, 6, 7, 8)
@@ -14,6 +15,27 @@ PARITY_NAMES = {
     PARITY_MARK: 'Mark',
     PARITY_SPACE: 'Space',
 }
+
+def to_bytes(seq):
+    """convert a sequence to a bytes type"""
+    if isinstance(seq, bytes):
+        return seq
+    elif isinstance(seq, bytearray):
+        return bytes(seq)
+    elif isinstance(seq, memoryview):
+        return seq.tobytes()
+    elif isinstance(seq, str):
+        raise TypeError('unicode strings are not supported, please encode to bytes: {!r}'.format(seq))
+    else:
+        # handle list of integers and bytes (one or more items) for Python 2 and 3
+        return bytes(bytearray(seq))
+
+# create control bytes
+XON = to_bytes([17])
+XOFF = to_bytes([19])
+
+CR = to_bytes([13])
+LF = to_bytes([10])
 
 class SerialBase(io.RawIOBase):
     """\
@@ -35,7 +57,14 @@ class SerialBase(io.RawIOBase):
                  baudrate=9600,
                  bytesize=EIGHTBITS,
                  parity=PARITY_NONE,
-                 stopbits=STOPBITS_ONE):
+                 stopbits=STOPBITS_ONE,
+                 timeout=None,
+                 xonxoff=False,
+                 rtscts=False,
+                 write_timeout=None,
+                 dsrdtr=False,
+                 inter_byte_timeout=None,
+                 **kwargs):
         """Initialize comm port object. If a "port" is given, then the port will be
             opened immediately. Otherwise a Serial port object in closed state
             is returned.
@@ -50,6 +79,17 @@ class SerialBase(io.RawIOBase):
         self._bytesize = None
         self._parity = None
         self._stopbits = None
+        self._timeout = None
+        self._write_timeout = None
+        self._xonxoff = None
+        self._rtscts = None
+        self._dsrdtr = None
+        self._inter_byte_timeout = None
+        self._rs485_mode = None  # disabled by default
+        self._rts_state = True
+        self._dtr_state = True
+        self._break_state = False
+        self._exclusive = None
 
         # assign values using get/set methods using the properties feature
         self.port = port
@@ -57,6 +97,16 @@ class SerialBase(io.RawIOBase):
         self.bytesize = bytesize
         self.parity = parity
         self.stopbits = stopbits
+        self.timeout = timeout
+        self.write_timeout = write_timeout
+        self.xonxoff = xonxoff
+        self.rtscts = rtscts
+        self.dsrdtr = dsrdtr
+        self.inter_byte_timeout = inter_byte_timeout
+
+        ##-- Открываем порт
+        if port is not None:
+            self.open()
 
     ##-------------Порт----------##
     @property
@@ -70,15 +120,16 @@ class SerialBase(io.RawIOBase):
     @port.setter
     def port(self, port):
         if port is not None and not isinstance(port, str):
-            print("\"port\" must be None or a string")
+            print("ERROR: \"port\" must be None or a string")
+            exit(1)
         was_open = self.is_open
         if was_open:
             self.close()
-            self.portstr = port
-            self._port = port
-            self.name = self.portstr
-            if was_open:
-                self.open()
+        self.portstr = port
+        self._port = port
+        self.name = self.portstr
+        if was_open:
+            self.open()
 
     ##---------Скорость--------##
     @property
@@ -109,7 +160,8 @@ class SerialBase(io.RawIOBase):
     def bytesize(self, bytesize):
         """Change byte size."""
         if bytesize not in self.BYTESIZES:
-            print("Not a valid byte size: \'" + str(bytesize) + "\'")
+            print("ERROR: Not a valid byte size: \'" + str(bytesize) + "\'")
+            exit(1)
         self._bytesize = bytesize
         if self.is_open:
             pass
@@ -125,7 +177,8 @@ class SerialBase(io.RawIOBase):
     def parity(self, parity):
         """Change parity setting."""
         if parity not in self.PARITIES:
-            print("Not a valid parity: {!r}".format(parity))
+            print("ERROR: Not a valid parity: {!r}".format(parity))
+            exit(1)
         self._parity = parity
         if self.is_open:
             pass
@@ -141,8 +194,128 @@ class SerialBase(io.RawIOBase):
     def stopbits(self, stopbits):
         """Change stop bits size."""
         if stopbits not in self.STOPBITS:
-            print("Not a valid stop bit size: {!r}".format(stopbits))
+            print("ERROR: Not a valid stop bit size: {!r}".format(stopbits))
+            exit(1)
         self._stopbits = stopbits
         if self.is_open:
             pass
             # self._reconfigure_port()
+
+    ##-------------------Set timeout--------------##
+    @property
+    def timeout(self):
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, timeout):
+        if timeout is not None:
+            try:
+                timeout + 1
+            except TypeError:
+                raise ValueError("Not a valid timeout: {!r}".format(timeout))
+            if timeout < 0:
+                raise ValueError("Not a valid timeout: {!r}".format(timeout))
+        self._timeout = timeout
+        if self.is_open:
+            self._reconfigure_port()
+
+    ##--------Set the copy of timeout-----------##
+    @property
+    def write_timeout(self):
+        """Get the current timeout setting."""
+        return self._write_timeout
+
+    @write_timeout.setter
+    def write_timeout(self, timeout):
+        """Change timeout setting."""
+        if timeout is not None:
+            if timeout < 0:
+                raise ValueError("Not a valid timeout: {!r}".format(timeout))
+            try:
+                timeout + 1     # test if it's a number, will throw a TypeError if not...
+            except TypeError:
+                raise ValueError("Not a valid timeout: {!r}".format(timeout))
+
+        self._write_timeout = timeout
+        if self.is_open:
+            self._reconfigure_port()
+
+    ##----------Set xonxoff--------##
+
+    @property
+    def xonxoff(self):
+        """Get the current XON/XOFF setting."""
+        return self._xonxoff
+
+    @xonxoff.setter
+    def xonxoff(self, xonxoff):
+        """Change XON/XOFF setting."""
+        self._xonxoff = xonxoff
+        if self.is_open:
+            self._reconfigure_port()
+
+    ##---------Set rtscts------------##
+
+    @property
+    def rtscts(self):
+        """Get the current RTS/CTS flow control setting."""
+        return self._rtscts
+
+    @rtscts.setter
+    def rtscts(self, rtscts):
+        """Change RTS/CTS flow control setting."""
+        self._rtscts = rtscts
+        if self.is_open:
+            self._reconfigure_port()
+
+    ##----------Set dsrdtr----------##
+
+    @property
+    def dsrdtr(self):
+        """Get the current DSR/DTR flow control setting."""
+        return self._dsrdtr
+
+    @dsrdtr.setter
+    def dsrdtr(self, dsrdtr=None):
+        """Change DsrDtr flow control setting."""
+        if dsrdtr is None:
+            # if not set, keep backwards compatibility and follow rtscts setting
+            self._dsrdtr = self._rtscts
+        else:
+            # if defined independently, follow its value
+            self._dsrdtr = dsrdtr
+        if self.is_open:
+            self._reconfigure_port()
+
+    ##-----------Set inter byte timeout-----------##
+
+    @property
+    def inter_byte_timeout(self):
+        """Get the current inter-character timeout setting."""
+        return self._inter_byte_timeout
+
+    @inter_byte_timeout.setter
+    def inter_byte_timeout(self, ic_timeout):
+        """Change inter-byte timeout setting."""
+        if ic_timeout is not None:
+            if ic_timeout < 0:
+                raise ValueError("Not a valid timeout: {!r}".format(ic_timeout))
+            try:
+                ic_timeout + 1     # test if it's a number, will throw a TypeError if not...
+            except TypeError:
+                raise ValueError("Not a valid timeout: {!r}".format(ic_timeout))
+
+        self._inter_byte_timeout = ic_timeout
+        if self.is_open:
+            self._reconfigure_port()
+
+    ##---------Display all info about port----------##
+    def __repr__(self):
+        """String representation of the current port settings and its state."""
+        return '{name}<id=0x{id:x}, open={p.is_open}>(port={p.portstr!r}, ' \
+               'baudrate={p.baudrate!r}, bytesize={p.bytesize!r}, parity={p.parity!r}, ' \
+               'stopbits={p.stopbits!r}, timeout={p.timeout!r}, xonxoff={p.xonxoff!r}, ' \
+               'rtscts={p.rtscts!r}, dsrdtr={p.dsrdtr!r})'.format(
+                   name=self.__class__.__name__, id=id(self), p=self)
+
+
