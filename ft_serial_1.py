@@ -4,7 +4,7 @@ from serial import win32
 
 # import serial
 # from serial.serialutil import SerialBase, SerialException, to_bytes, portNotOpenError, writeTimeoutError
-from ft_serial import SerialBase
+from ft_serial import SerialBase, to_bytes
 import ft_serial
 
 class Serial(SerialBase):
@@ -224,3 +224,78 @@ class Serial(SerialBase):
 	"""##-------------Stop write information-------##"""""
 	def cancel_write(self):
 		self._cancel_overlapped_io(self._overlapped_write)
+
+	"""--------------------Write info---------------------"""
+	def write(self, data):
+		if not self.is_open:
+			print("Port is not opened")
+			exit(1)
+		data = to_bytes(data)
+		if data:
+			n = win32.DWORD()
+			success = win32.WriteFile(self._port_handle, data, len(data),
+			                          ctypes.byref(n), self._overlapped_write)
+			if self._write_timeout != 0:
+				if not success and win32.GetLastError() not in (win32.ERROR_SUCCESS, win32.ERROR_IO_PENDING):
+					print("WriteFile failed ({!r})".format(ctypes.WinError()))
+					exit(1)
+				win32.GetOverlappedResult(self._port_handle, self._overlapped_write,
+				                          ctypes.byref(n), True)
+				if win32.GetLastError() == win32.ERROR_OPERATION_ABORTED:
+					return n.value
+				if n.value != len(data):
+					print("Write timeout")
+					exit(1)
+				return n.value
+			else:
+				errorcode = win32.ERROR_SUCCESS if success else win32.GetLastError()
+				if errorcode in (win32.ERROR_INVALID_USER_BUFFER, win32.ERROR_NOT_ENOUGH_MEMORY,
+				                 win32.ERROR_OPERATION_ABORTED):
+					return 0
+				elif errorcode in (win32.ERROR_SUCCESS, win32.ERROR_IO_PENDING):
+					# no info on true length provided by OS function in async mode
+					return len(data)
+				else:
+					print("WriteFile failed ({!r})".format(ctypes.WinError()))
+					exit(1)
+		else:
+			return 0
+
+	"""--------------------Read info-----------------"""
+	def read(self, size=1):
+		if not self.is_open:
+			print("Port is not opened")
+			exit(1)
+		if size > 0:
+			win32.ResetEvent(self._overlapped_read.hEvent)
+			flags = win32.DWORD()
+			comstat = win32.COMSTAT()
+			if not win32.ClearCommError(self._port_handle, ctypes.byref(flags), ctypes.byref(comstat)):
+				print("ClearCommError failed ({!r})".format(ctypes.WinError()))
+				exit(1)
+			n = min(comstat.cbInQue, size) if self.timeout == 0 else size
+			if n > 0:
+				buf = ctypes.create_string_buffer(n)
+				rc = win32.DWORD()
+				read_ok = win32.ReadFile(self._port_handle,
+				                         buf,
+				                         n,
+				                         ctypes.byref(rc),
+				                         ctypes.byref(self._overlapped_read))
+				if not read_ok and win32.GetLastError() not in (win32.ERROR_SUCCESS, win32.ERROR_IO_PENDING):
+					print("ReadFile failed ({!r})".format(ctypes.WinError()))
+					exit(1)
+				result_ok = win32.GetOverlappedResult(self._port_handle,
+				                                      ctypes.byref(self._overlapped_read),
+				                                      ctypes.byref(rc),
+				                                      True)
+				if not result_ok:
+					if win32.GetLastError() != win32.ERROR_OPERATION_ABORTED:
+						raise SerialException("GetOverlappedResult failed ({!r})".format(ctypes.WinError()))
+				read = buf.raw[:rc.value]
+			else:
+				read = bytes()
+		else:
+			read = bytes()
+		return bytes(read)
+
