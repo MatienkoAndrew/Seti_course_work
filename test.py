@@ -145,6 +145,7 @@ def configure_window():
 
 
 def main():
+	global ser
 	ser = Serial()
 	window = configure_window()
 	ser.port = port
@@ -152,8 +153,88 @@ def main():
 	ser.bytesize = int(byte_size)
 	ser.parity = parity
 	ser.stopbits = int(stopbits)
-	ser.open()
+	window_1 = chat(ser)
+	# ser.open()
 	print(ser)
+
+def chat(ser):
+	global out_flag
+	# -- массив полученных строк
+	in_list = []
+	# -- признаки занятости ввода-вывода
+	out_flag = []
+	# функция приема строки
+	def fn_in():
+		global in_list
+		while ser.is_open:
+			# --ждем прихода к нам строки
+			in_len = 0
+			while in_len < 1:
+				in_st = ser.readline()
+				in_len = len(in_st)
+			## -- ждем освобождения входного буфера и записываем в него
+			in_list.append(in_st)
+			time.sleep(1)
+
+	## -- запустить поток приема
+	tr_in = threading.Thread(target=fn_in)
+	tr_in.daemon = True
+	tr_in.start()
+
+	## -- запустить основной поток
+	def fn_out():
+		global out_flag
+		out_flag = 1
+
+	def fn_send():
+		global user_name
+		out_st = enter.get()
+		if len(out_st) > 0:
+			ser.write(out_st.encode())
+			listbox.insert(END, user_name + ": " + out_st)
+		enter.delete(0, END)
+
+	## == вывести строки в листбокс
+	def fn_disp():
+		global out_flag
+		while len(in_list) > 0:
+			st = in_list.pop(0)
+			listbox.insert(END, st)
+		if out_flag:
+			fn_send()
+			out_flag = 0
+		window.after(100, fn_disp)
+
+	window = Tk()
+	window.geometry('700x400')
+	listbox = Listbox(window,  font=('Calibri', 15))
+	listbox.place(x=0, y=0, width=600, height=340)
+
+	enter = Entry(window, font=('Calibri', 15))
+	enter.place(x=0, y=340, width=600, height=40)
+
+	def open_port():
+		global ser
+		state = DISABLED
+		if ser.is_open == False:
+			ser.open()
+			if ser.is_open:
+				listbox.insert(END, "Port " + ser.port + " is opened")
+				button_open.config(text="Закрыть порт")
+				button_display.config(state=NORMAL)
+		else:
+			ser.close()
+			if ser.is_open == False:
+				listbox.insert(END, "Port " + ser.port + " is closed")
+				button_open.config(text="Открыть порт")
+				button_display.config(state=DISABLED)
+	button_open = Button(window, text="Открыть порт", command=open_port) #command=open_port(ser))
+	button_open.place(x=600,y=0, width=100, height=40)
+
+	button_display = Button(window, text='Отправить', command=fn_out, state=DISABLED)
+	button_display.place(x=600, y=340, width=100, height=40)
+	window.after(10, fn_disp)
+	window.mainloop()
 
 if __name__== "__main__":
 	main()
