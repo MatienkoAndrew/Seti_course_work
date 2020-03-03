@@ -264,7 +264,7 @@ class Serial(SerialBase):
 	"""--------------------Read info-----------------"""
 	def read(self, size=1):
 		if not self.is_open:
-			print("Port is not opened")
+			print("ERROR: Port is not opened")
 			exit(1)
 		if size > 0:
 			win32.ResetEvent(self._overlapped_read.hEvent)

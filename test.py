@@ -211,9 +211,9 @@ def chat(ser):
 
 	def fn_send():
 		global user_name
-		out_st = enter.get() + '\r\n'
+		out_st = enter.get()
 		if len(out_st) > 0:
-			ser.write(out_st.encode('utf-8'))
+			ser.write((out_st + '\r\n').encode('utf-8'))
 			listbox.insert(END, user_name + ": " + out_st)
 		enter.delete(0, END)
 
@@ -248,7 +248,7 @@ def chat(ser):
 				button_display.config(state=NORMAL)
 				if tr_in._started._flag == False:
 					tr_in.start()
-					thread_2.start()
+					# thread_2.start()
 		else:
 			ser.close()
 			if ser.is_open == False:
@@ -257,6 +257,21 @@ def chat(ser):
 				button_display.config(state=DISABLED)
 	button_open = Button(window, text="Открыть порт", command=open_port) #command=open_port(ser))
 	button_open.place(x=600,y=0, width=100, height=40)
+
+	def about_program():
+		temp_window = Tk()
+		temp_window.geometry('200x100')
+		student_1 = Label(temp_window, text="Анастасия Молева", font=('Arial', 15))
+		student_1.grid(row=0,column=0)
+		student_2 = Label(temp_window, text="Матиенко Андрей", font=('Arial', 15))
+		student_2.grid(row=1,column=0)
+		student_3 = Label(temp_window, text="Белоусов Евгений", font=('Arial', 15))
+		student_3.grid(row=2,column=0)
+		temp_window.mainloop()
+
+	mainmenu = Menu(window)
+	window.config(menu=mainmenu)
+	mainmenu.add_command(label="О программе", command=about_program)
 
 	button_display = Button(window, text='Отправить', command=fn_out, state=DISABLED)
 	button_display.place(x=600, y=340, width=100, height=40)
