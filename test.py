@@ -153,6 +153,7 @@ def main():
 	ser.bytesize = int(byte_size)
 	ser.parity = parity
 	ser.stopbits = int(stopbits)
+	# ser.timeout = 2
 	window_1 = chat(ser)
 	# ser.open()
 	print(ser)
@@ -167,23 +168,41 @@ def chat(ser):
 	# -- признаки занятости ввода-вывода
 	out_flag = []
 
+
+	def check_connect():
+		while True:
+			if ser.is_open:
+				listbox.insert(END, "ACK_LINKACTIVE")
+				ser.write("ACK_LINKACTIVE\r\n".encode('utf-8'))
+				time.sleep(10)
+
 	# функция приема строки
 	def fn_in():
 		global in_list
 		while 1:
-			# --ждем прихода к нам строки
-			in_len = 0
-			while in_len < 1:
-				in_st = ser.readline(1024)
-				in_len = len(in_st)
-			## -- ждем освобождения входного буфера и записываем в него
-			in_list.append(in_st)
-			time.sleep(1)
+			if ser.is_open:
+				# --ждем прихода к нам строки
+				in_len = 0
+				while in_len < 1:
+					if ser.is_open:
+						# window.after(10000, check_connect)
+						in_st = ser.readline()
+						if in_st == b"ACK_LINKACTIVE\r\n":
+							listbox.insert(END, "LINKACTIVE")
+							in_st = []
+						in_len = len(in_st)
+				## -- ждем освобождения входного буфера и записываем в него
+				if ser.is_open:
+					in_list.append(in_st)
+					time.sleep(1)
 
 	## -- запустить поток приема
 	tr_in = threading.Thread(target=fn_in)
 	tr_in.daemon = True
 	# tr_in.start()
+
+	thread_2 = threading.Thread(target=check_connect)
+	thread_2.daemon = True
 
 	## -- запустить основной поток
 	def fn_out():
@@ -227,7 +246,9 @@ def chat(ser):
 				listbox.insert(END, "Port " + ser.port + " is opened")
 				button_open.config(text="Закрыть порт")
 				button_display.config(state=NORMAL)
-				tr_in.start()
+				if tr_in._started._flag == False:
+					tr_in.start()
+					thread_2.start()
 		else:
 			ser.close()
 			if ser.is_open == False:
