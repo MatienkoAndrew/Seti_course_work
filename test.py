@@ -188,13 +188,9 @@ def chat(ser):
 		while 1:
 			if ser.is_open:
 				# --ждем прихода к нам строки
-				# in_len = 0
-				# data_to_read = ser.in_waiting
 				while ser.in_waiting > 0:
-				# while in_len < 1:
 					if ser.is_open:
 						# window.after(10000, check_connect)
-						# in_st = ser.readline()
 						in_st = ser.readline()
 						if in_st == b"ACK_LINKACTIVE\r\n":
 							listbox.insert(END, "LINKACTIVE")
@@ -202,6 +198,7 @@ def chat(ser):
 						else:
 							if in_st != b'':
 								in_list.append(in_st)
+				time.sleep(1)   ##-- Надеюсь, CPU не будет нагреваться на 100C
 						# in_len = len(in_st)
 				## -- ждем освобождения входного буфера и записываем в него
 				# if ser.is_open:
