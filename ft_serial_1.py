@@ -261,6 +261,16 @@ class Serial(SerialBase):
 		else:
 			return 0
 
+	@property
+	def in_waiting(self):
+		"""Return the number of bytes currently in the input buffer."""
+		flags = win32.DWORD()
+		comstat = win32.COMSTAT()
+		if not win32.ClearCommError(self._port_handle, ctypes.byref(flags), ctypes.byref(comstat)):
+			# print("ClearCommError failed ({!r})".format(ctypes.WinError()))
+			pass
+		return comstat.cbInQue
+
 	"""--------------------Read info-----------------"""
 	def read(self, size=1):
 		if not self.is_open:
@@ -271,20 +281,25 @@ class Serial(SerialBase):
 			flags = win32.DWORD()
 			comstat = win32.COMSTAT()
 			if not win32.ClearCommError(self._port_handle, ctypes.byref(flags), ctypes.byref(comstat)):
-				print("ClearCommError failed ({!r})".format(ctypes.WinError()))
+				print("ERROR: ClearCommError failed ({!r})".format(ctypes.WinError()))
 				exit(1)
 			n = min(comstat.cbInQue, size) if self.timeout == 0 else size
 			if n > 0:
 				buf = ctypes.create_string_buffer(n)
 				rc = win32.DWORD()
+				# if n == 1:
+				# 	return buf.value
 				read_ok = win32.ReadFile(self._port_handle,
 				                         buf,
 				                         n,
 				                         ctypes.byref(rc),
 				                         ctypes.byref(self._overlapped_read))
 				if not read_ok and win32.GetLastError() not in (win32.ERROR_SUCCESS, win32.ERROR_IO_PENDING):
-					print("ReadFile failed ({!r})".format(ctypes.WinError()))
+					print("ERROR: ReadFile failed ({!r})".format(ctypes.WinError()))
 					exit(1)
+				if not read_ok:
+					print("ERROR: Something bad")
+					return buf.value
 				result_ok = win32.GetOverlappedResult(self._port_handle,
 				                                      ctypes.byref(self._overlapped_read),
 				                                      ctypes.byref(rc),

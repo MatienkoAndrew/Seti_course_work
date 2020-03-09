@@ -6,6 +6,7 @@
       <change beforePath="$PROJECT_DIR$/ft_serial_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/ft_serial_1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +37,8 @@
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.test_1">
-    <configuration name="com_chat" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.test_2">
+    <configuration name="code_Hemming" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Kursach" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -50,7 +51,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/com_chat.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code_Hemming.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -149,11 +150,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test_1" />
-        <item itemvalue="Python.test" />
         <item itemvalue="Python.test_2" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.code_Hemming" />
+        <item itemvalue="Python.test_1" />
         <item itemvalue="Python.com_chat_1" />
-        <item itemvalue="Python.com_chat" />
       </list>
     </recent_temporary>
   </component>
@@ -188,7 +189,10 @@
       <workItem from="1582983901972" duration="5856000" />
       <workItem from="1583053228957" duration="22630000" />
       <workItem from="1583169611174" duration="9484000" />
-      <workItem from="1583240271996" duration="18713000" />
+      <workItem from="1583240271996" duration="19425000" />
+      <workItem from="1583682091918" duration="131000" />
+      <workItem from="1583682233673" duration="13155000" />
+      <workItem from="1583747278262" duration="431000" />
     </task>
     <servers />
   </component>
@@ -196,54 +200,58 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="767" height="466" key="DebuggerActiveHint" timestamp="1583242771451">
+    <state x="527" y="222" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1583682382580">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="767" height="466" key="DebuggerActiveHint/0.0.1536.824@0.0.1536.824" timestamp="1583242771451" />
+    <state x="527" y="222" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.824@0.0.1536.824" timestamp="1583682382580" />
+    <state width="767" height="466" key="DebuggerActiveHint" timestamp="1583689081943">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="767" height="466" key="DebuggerActiveHint/0.0.1536.824@0.0.1536.824" timestamp="1583689081943" />
     <state x="548" y="169" key="FileChooserDialogImpl" timestamp="1582646274737">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="548" y="169" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1582646274737" />
-    <state width="1493" height="172" key="GridCell.Tab.0.bottom" timestamp="1583262047428">
+    <state width="1493" height="295" key="GridCell.Tab.0.bottom" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="172" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1583262047428" />
-    <state width="1493" height="172" key="GridCell.Tab.0.center" timestamp="1583262047428">
+    <state width="1493" height="295" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.0.center" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="172" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1583262047428" />
-    <state width="1493" height="172" key="GridCell.Tab.0.left" timestamp="1583262047428">
+    <state width="1493" height="295" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.0.left" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="172" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1583262047428" />
-    <state width="1493" height="172" key="GridCell.Tab.0.right" timestamp="1583262047428">
+    <state width="1493" height="295" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.0.right" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="172" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1583262047428" />
-    <state width="1493" height="295" key="GridCell.Tab.1.bottom" timestamp="1583260936510">
+    <state width="1493" height="295" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.1.bottom" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="295" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1583260936510" />
-    <state width="1493" height="295" key="GridCell.Tab.1.center" timestamp="1583260936510">
+    <state width="1493" height="295" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.1.center" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="295" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1583260936510" />
-    <state width="1493" height="295" key="GridCell.Tab.1.left" timestamp="1583260936510">
+    <state width="1493" height="295" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.1.left" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="295" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1583260936510" />
-    <state width="1493" height="295" key="GridCell.Tab.1.right" timestamp="1583260936510">
+    <state width="1493" height="295" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state width="1493" height="295" key="GridCell.Tab.1.right" timestamp="1583747710718">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="295" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1583260936510" />
-    <state x="279" y="57" key="SettingsEditor" timestamp="1583067077269">
+    <state width="1493" height="295" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1583747710718" />
+    <state x="279" y="57" key="SettingsEditor" timestamp="1583690112678">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="279" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1583067077269" />
-    <state x="477" y="239" key="com.intellij.ide.util.TipDialog" timestamp="1583240286779">
+    <state x="279" y="57" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1583690112678" />
+    <state x="477" y="239" key="com.intellij.ide.util.TipDialog" timestamp="1583747722572">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="477" y="239" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1583240286779" />
+    <state x="477" y="239" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1583747722572" />
     <state x="431" y="145" width="672" height="678" key="search.everywhere.popup" timestamp="1582972880445">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -278,42 +286,31 @@
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/test.py</url>
-          <line>199</line>
-          <option name="timeStamp" value="46" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test_2.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="50" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ft_serial_1.py</url>
-          <line>265</line>
-          <option name="timeStamp" value="54" />
+          <line>9</line>
+          <option name="timeStamp" value="57" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="basestring" language="Python" />
-        <watch expression="n" language="Python" />
-        <watch expression="combo1['values']" language="Python" />
-        <watch expression="com_port[0]" language="Python" />
-        <watch expression="stopbits" language="Python" />
-        <watch expression="stopbits == None" language="Python" />
+        <watch expression="self._port_handle" language="Python" />
+        <watch expression="ctypes.byref(self._overlapped_read)" language="Python" />
+        <watch expression="ctypes.byref(rc)" language="Python" />
+        <watch expression="self._overlapped_read" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Kursach$ft_serial.coverage" NAME="ft_serial Coverage Results" MODIFIED="1582984376806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$client_1.coverage" NAME="client_1 Coverage Results" MODIFIED="1582974877633" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Kursach$test_1.coverage" NAME="test_1 Coverage Results" MODIFIED="1583262047416" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Kursach$test_1.coverage" NAME="test_1 Coverage Results" MODIFIED="1583682790732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$server_1.coverage" NAME="server_1 Coverage Results" MODIFIED="1582974008929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$physical_level.coverage" NAME="physical_level Coverage Results" MODIFIED="1583068110186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$com_chat_1.coverage" NAME="com_chat_1 Coverage Results" MODIFIED="1583178105094" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Kursach$test_2.coverage" NAME="test_2 Coverage Results" MODIFIED="1583253029836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Kursach$test.coverage" NAME="test Coverage Results" MODIFIED="1583262043157" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Kursach$test.coverage" NAME="test Coverage Results" MODIFIED="1583699970946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Kursach$test_2.coverage" NAME="test_2 Coverage Results" MODIFIED="1583747377974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Kursach$code_Hemming.coverage" NAME="code_Hemming Coverage Results" MODIFIED="1583684329537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$client.coverage" NAME="client Coverage Results" MODIFIED="1582972753211" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$com_chat.coverage" NAME="com_chat Coverage Results" MODIFIED="1583178101435" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Kursach$ft_serial_1.coverage" NAME="ft_serial_1 Coverage Results" MODIFIED="1582983149419" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

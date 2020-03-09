@@ -54,11 +54,13 @@ def validation(name, com_port, speed_b, size_b, parity_b, bit_stop):
 		showerror("Bad COM-port.", port + " не существует")
 		return False
 	speed = speed_b.get()
-	if speed.isnumeric() == False or int(speed) not in BAUDRATES:
+	speed_u = unicode(speed, 'utf-8')
+	if speed_u.isnumeric() == False or int(speed) not in BAUDRATES:
 		showerror("Bad baudrate.", speed + " не существует")
 		return False
 	byte_size = size_b.get()
-	if byte_size.isnumeric() == False or int(byte_size) not in BYTESIZES:
+	byte_size_u = unicode(byte_size, 'utf-8')
+	if byte_size_u.isnumeric() == False or int(byte_size) not in BYTESIZES:
 		showerror("Bad bytesize.", byte_size + " не существует")
 		return False
 	parity = parity_b.get()
@@ -66,7 +68,8 @@ def validation(name, com_port, speed_b, size_b, parity_b, bit_stop):
 		showerror("Bad parity.", parity + " не существует")
 		return False
 	stopbits = bit_stop.get()
-	if stopbits.isnumeric() == False or int(stopbits) not in STOPBITS:
+	stopbits_u = unicode(stopbits, 'utf-8')
+	if stopbits_u.isnumeric() == False or int(stopbits) not in STOPBITS:
 		showerror("Bad stopbit.", stopbits + " не существует")
 		return False
 	return True
@@ -176,27 +179,39 @@ def chat(ser):
 				ser.write("ACK_LINKACTIVE\r\n".encode('utf-8'))
 				time.sleep(10)
 
+	global in_st
+	in_st = []
 	# функция приема строки
 	def fn_in():
 		global in_list
+		global in_st
 		while 1:
 			if ser.is_open:
 				# --ждем прихода к нам строки
-				in_len = 0
-				while in_len < 1:
+				# in_len = 0
+				# data_to_read = ser.in_waiting
+				while ser.in_waiting > 0:
+				# while in_len < 1:
 					if ser.is_open:
 						# window.after(10000, check_connect)
+						# in_st = ser.readline()
 						in_st = ser.readline()
 						if in_st == b"ACK_LINKACTIVE\r\n":
 							listbox.insert(END, "LINKACTIVE")
 							in_st = []
-						in_len = len(in_st)
+						else:
+							if in_st != b'':
+								in_list.append(in_st)
+						# in_len = len(in_st)
 				## -- ждем освобождения входного буфера и записываем в него
-				if ser.is_open:
-					in_list.append(in_st)
-					time.sleep(1)
+				# if ser.is_open:
+				# 	if in_st != []:
+				# 		in_list.append(in_st)
+				# 	time.sleep(1)
 
 	## -- запустить поток приема
+	global start_thread
+	start_thread = 0
 	tr_in = threading.Thread(target=fn_in)
 	tr_in.daemon = True
 	# tr_in.start()
@@ -239,6 +254,7 @@ def chat(ser):
 	def open_port():
 		global ser
 		global tr_in
+		global start_thread
 		state = DISABLED
 		if ser.is_open == False:
 			ser.open()
@@ -246,8 +262,10 @@ def chat(ser):
 				listbox.insert(END, "Port " + ser.port + " is opened")
 				button_open.config(text="Закрыть порт")
 				button_display.config(state=NORMAL)
-				if tr_in._started._flag == False:
+				# if tr_in._started._flag == False:
+				if start_thread == 0:
 					tr_in.start()
+					start_thread = 1
 					# thread_2.start()
 		else:
 			ser.close()
