@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 import random
 
 # длина блока кодирования
@@ -13,10 +15,12 @@ CHECK_BITS = [i for i in range(1, CHUNK_LENGTH + 1) if not i & (i - 1)]
 def chars_to_bin(chars):
     """
     Преобразование символов в бинарный формат
+    #ord - преобразование в int
+    #bin - преобразование в 2сс
+    #zfill - заполнение нулями
     """
     assert not len(chars) * 8 % CHUNK_LENGTH, 'Длина кодируемых данных должна быть кратна длине блока кодирования'
     return ''.join([bin(ord(c))[2:].zfill(8) for c in chars])
-
 
 def chunk_iterator(text_bin, chunk_size=CHUNK_LENGTH):
     """

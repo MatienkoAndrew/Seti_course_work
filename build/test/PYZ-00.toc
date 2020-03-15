@@ -551,6 +551,7 @@
   ('numbers', 'c:\\python27\\lib\\numbers.py', 'PYMODULE'),
   ('ft_serial_1', 'D:\\Kursach\\ft_serial_1.py', 'PYMODULE'),
   ('ft_serial', 'D:\\Kursach\\ft_serial.py', 'PYMODULE'),
+  ('code_Hemming', 'D:\\Kursach\\code_Hemming.py', 'PYMODULE'),
   ('serial.win32',
    'c:\\python27\\lib\\site-packages\\serial\\win32.py',
    'PYMODULE'),

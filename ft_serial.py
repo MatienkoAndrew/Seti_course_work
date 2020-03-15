@@ -91,6 +91,7 @@ class SerialBase(io.RawIOBase):
         self._dtr_state = True
         self._break_state = False
         self._exclusive = None
+        self._buffer = []
 
         # assign values using get/set methods using the properties feature
         self.port = port

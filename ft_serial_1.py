@@ -1,6 +1,7 @@
 import ctypes
 import time
 from serial import win32
+from code_Hemming import *
 
 # import serial
 # from serial.serialutil import SerialBase, SerialException, to_bytes, portNotOpenError, writeTimeoutError
@@ -226,6 +227,21 @@ class Serial(SerialBase):
 		self._cancel_overlapped_io(self._overlapped_write)
 
 	"""--------------------Write info---------------------"""
+
+	def ft_write(self, data):
+		if not self.is_open:
+			print("Port is not opened")
+			exit(1)
+		data_encode = encode(data)
+		data_encode_with_errors = set_errors(data_encode)
+		data_encode_with_errors = data_encode_with_errors.encode('utf-8')
+		n = win32.DWORD()
+		success = win32.WriteFile(self._port_handle, data_encode_with_errors, len(data_encode_with_errors),
+		                          ctypes.byref(n), self._overlapped_write)
+		self._buffer.append(data_encode_with_errors)
+		return len(data)
+
+
 	def write(self, data):
 		if not self.is_open:
 			print("Port is not opened")
@@ -272,6 +288,29 @@ class Serial(SerialBase):
 		return comstat.cbInQue
 
 	"""--------------------Read info-----------------"""
+
+	def ft_read(self, size=1):
+		if not self.is_open:
+			print("ERROR: Port is not opened")
+		if size > 0:
+			win32.ResetEvent(self._overlapped_read.hEvent)
+			flags = win32.DWORD()
+			comstat = win32.COMSTAT()
+			n = min(comstat.cbInQue, size) if self.timeout == 0 else size
+			if n > 0:
+				buf = ctypes.create_string_buffer(n)
+				rc = win32.DWORD()
+				read_ok = win32.ReadFile(self._port_handle,
+				                         buf,
+				                         n,
+				                         ctypes.byref(rc),
+				                         ctypes.byref(self._overlapped_read))
+				buffer = buf.raw.decode('utf-8')
+				buffer = decode(buffer)
+				return buffer
+		else:
+			return []
+
 	def read(self, size=1):
 		if not self.is_open:
 			print("ERROR: Port is not opened")
@@ -287,8 +326,6 @@ class Serial(SerialBase):
 			if n > 0:
 				buf = ctypes.create_string_buffer(n)
 				rc = win32.DWORD()
-				# if n == 1:
-				# 	return buf.value
 				read_ok = win32.ReadFile(self._port_handle,
 				                         buf,
 				                         n,

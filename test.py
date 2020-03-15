@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import threading
 import time
+from datetime import *
 import serial
 from serial.tools import list_ports
 from tkinter import *
@@ -173,10 +174,13 @@ def chat(ser):
 
 
 	def check_connect():
+		time.sleep(10)
 		while True:
 			if ser.is_open:
-				listbox.insert(END, "ACK_LINKACTIVE")
-				ser.write("ACK_LINKACTIVE\r\n".encode('utf-8'))
+				listbox.insert(END, datetime.strftime(datetime.now(), "%H:%M:%S") + " ACK_LINKACTIVE")
+				# ser.write("ACK_LINKACTIVE\r\n".encode('utf-8'))
+				ser.ft_write("ACK_LINKACTIVE")
+
 				time.sleep(10)
 
 	global in_st
@@ -191,14 +195,18 @@ def chat(ser):
 				while ser.in_waiting > 0:
 					if ser.is_open:
 						# window.after(10000, check_connect)
-						in_st = ser.readline()
-						if in_st == b"ACK_LINKACTIVE\r\n":
-							listbox.insert(END, "LINKACTIVE")
+						# in_st = ser.readline()
+						data_to_read = ser.in_waiting
+						in_st = ser.ft_read(data_to_read)
+						# if in_st == b"ACK_LINKACTIVE\r\n":
+						if in_st == "ACK_LINKACTIVE":
+							listbox.insert(END,  datetime.strftime(datetime.now(), "%H:%M:%S") + " LINKACTIVE")
 							in_st = []
 						else:
-							if in_st != b'':
+							# if in_st != b'':
+							if in_st != '':
 								in_list.append(in_st)
-				time.sleep(1)   ##-- Надеюсь, CPU не будет нагреваться на 100C
+				time.sleep(1)   ##-- CPU не будет нагреваться до 100C
 						# in_len = len(in_st)
 				## -- ждем освобождения входного буфера и записываем в него
 				# if ser.is_open:
@@ -221,29 +229,53 @@ def chat(ser):
 		global out_flag
 		out_flag = 1
 
+	##--Отправление сообщений(через кнопку "Отправить"
+	global buffer_for_source_message
+	buffer_for_source_message = []
+
 	def fn_send():
 		global user_name
 		out_st = enter.get()
 		if len(out_st) > 0:
-			ser.write((out_st + '\r\n').encode('utf-8'))
+			# ser.write((out_st + '\r\n').encode('utf-8'))
+			ser.ft_write((out_st + '\r\n'))
 			listbox.insert(END, user_name + ": " + out_st)
+			buffer_for_source_message.append(user_name + ": " + out_st)
+			try:
+				listbox_source.insert(END, user_name + ": " + out_st)
+			except:
+				print("Source message window is closed")
 		enter.delete(0, END)
 
 	## == вывести строки в листбокс
+	global buffer_for_dest_message
+	buffer_for_dest_message = []
+
 	def fn_disp():
 		global out_flag
 		while len(in_list) > 0:
 			st = in_list.pop(0)
 			listbox.insert(END, st)
+			buffer_for_dest_message.append(st)
+			try:
+				listbox_dest.insert(END, st)
+			except:
+				print("Destination message window is closed")
 		if out_flag:
 			fn_send()
 			out_flag = 0
 		window.after(100, fn_disp)
 
 	window = Tk()
-	window.geometry('700x400')
-	listbox = Listbox(window,  font=('Calibri', 15))
+	window.geometry('716x400')
+
+	scrollbar = Scrollbar(window)
+	scrollbar.pack(side=RIGHT, fill=Y)
+
+	listbox = Listbox(window, yscrollcommand=scrollbar.set, font=('Calibri', 12))
 	listbox.place(x=0, y=0, width=600, height=340)
+
+	scrollbar.config(command=listbox.yview)
 
 	enter = Entry(window, font=('Calibri', 15))
 	enter.place(x=0, y=340, width=600, height=40)
@@ -262,8 +294,8 @@ def chat(ser):
 				# if tr_in._started._flag == False:
 				if start_thread == 0:
 					tr_in.start()
+					thread_2.start()
 					start_thread = 1
-					# thread_2.start()
 		else:
 			ser.close()
 			if ser.is_open == False:
@@ -274,19 +306,59 @@ def chat(ser):
 	button_open.place(x=600,y=0, width=100, height=40)
 
 	def about_program():
-		temp_window = Tk()
-		temp_window.geometry('200x100')
-		student_1 = Label(temp_window, text="Анастасия Молева", font=('Arial', 15))
-		student_1.grid(row=0,column=0)
-		student_2 = Label(temp_window, text="Матиенко Андрей", font=('Arial', 15))
-		student_2.grid(row=1,column=0)
-		student_3 = Label(temp_window, text="Белоусов Евгений", font=('Arial', 15))
-		student_3.grid(row=2,column=0)
-		temp_window.mainloop()
+		global open_temp_window
+		if len(mainmenu.master.children) == 7:
+		# if '!toplevel' not in mainmenu.master.children.keys():
+			temp_window = Toplevel(window)
+			temp_window.title('О программе')
+			temp_window.geometry('300x100')
+			student_1 = Label(temp_window, text="Анастасия Молева", font=('Arial', 15))
+			student_1.grid(row=0,column=0)
+			student_2 = Label(temp_window, text="Матиенко Андрей", font=('Arial', 15))
+			student_2.grid(row=1,column=0)
+			student_3 = Label(temp_window, text="Белоусов Евгений", font=('Arial', 15))
+			student_3.grid(row=2,column=0)
+			open_temp_window = 1
+				# mainmenu.entryconfig(1, state=DISABLED)
+		# else:
+		# 	mainmenu.entryconfig(1, state=DISABLED)
+		# 	open_temp_window = 0
 
 	mainmenu = Menu(window)
 	window.config(menu=mainmenu)
+	global open_temp_window
+	open_temp_window = 0
 	mainmenu.add_command(label="О программе", command=about_program)
+
+	##--Исходящие сообщения(source_message)
+	def source_message():
+		global listbox_source
+		window_source_message = Toplevel(window)
+		window_source_message.title('Исходящие сообщения')
+		window_source_message.geometry('600x400+500+200')
+		listbox_source = Listbox(window_source_message, font=('Calibri', 12))
+		listbox_source.place(x=0, y=0, width=600, height=340)
+		for i in buffer_for_source_message:
+			listbox_source.insert(END, i)
+
+	button_source_message = Button(window, text='Исходящие', command=source_message)
+	button_source_message.place(x=600,y=200, width=100,height=40)
+	##----------------
+
+	##--Приходящие сообщения(destination_message)
+	def dest_message():
+		global listbox_dest
+		window_dest_message = Toplevel(window)
+		window_dest_message.title('Приходящие сообщения')
+		window_dest_message.geometry('600x400+800+200')
+		listbox_dest = Listbox(window_dest_message, font=('Calibri', 12))
+		listbox_dest.place(x=0, y=0, width=600, height=340)
+		for i in buffer_for_dest_message:
+			listbox_dest.insert(END, i)
+
+	button_dest_message = Button(window, text='Приходящие', command=dest_message)
+	button_dest_message.place(x=600,y=250,width=100,height=40)
+	##---------------------
 
 	button_display = Button(window, text='Отправить', command=fn_out, state=DISABLED)
 	button_display.place(x=600, y=340, width=100, height=40)
