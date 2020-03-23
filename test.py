@@ -69,8 +69,13 @@ def validation(name, com_port, speed_b, size_b, parity_b, bit_stop):
 		showerror("Bad parity.", parity + " не существует")
 		return False
 	stopbits = bit_stop.get()
-	stopbits_u = unicode(stopbits, 'utf-8')
-	if stopbits_u.isnumeric() == False or int(stopbits) not in STOPBITS:
+	# stopbits_u = unicode(stopbits, 'utf-8')
+	# if stopbits_u.isnumeric() == False or float(stopbits) not in STOPBITS:
+	try:
+		if float(stopbits) not in STOPBITS:
+			showerror("Bad stopbit.", stopbits + " не существует")
+			return False
+	except:
 		showerror("Bad stopbit.", stopbits + " не существует")
 		return False
 	return True
@@ -156,7 +161,7 @@ def main():
 	ser.baudrate = speed
 	ser.bytesize = int(byte_size)
 	ser.parity = parity
-	ser.stopbits = int(stopbits)
+	ser.stopbits = float(stopbits)
 	# ser.timeout = 2
 	window_1 = chat(ser)
 	# ser.open()
@@ -305,11 +310,19 @@ def chat(ser):
 	button_open = Button(window, text="Открыть порт", command=open_port) #command=open_port(ser))
 	button_open.place(x=600,y=0, width=100, height=40)
 
+	global counter_info_window
+	counter_info_window = 0
 	def about_program():
-		global open_temp_window
-		if len(mainmenu.master.children) == 7:
-		# if '!toplevel' not in mainmenu.master.children.keys():
+		"""Меню-справка о создателях программы
+			Количество открытых окон не должно превышать одного"""
+		global counter_info_window
+		if counter_info_window == 0:
 			temp_window = Toplevel(window)
+			def close_window():
+				global counter_info_window
+				counter_info_window -= 1
+				temp_window.destroy()
+			temp_window.protocol("WM_DELETE_WINDOW", close_window)
 			temp_window.title('О программе')
 			temp_window.geometry('300x100')
 			student_1 = Label(temp_window, text="Анастасия Молева", font=('Arial', 15))
@@ -318,45 +331,67 @@ def chat(ser):
 			student_2.grid(row=1,column=0)
 			student_3 = Label(temp_window, text="Белоусов Евгений", font=('Arial', 15))
 			student_3.grid(row=2,column=0)
-			open_temp_window = 1
-				# mainmenu.entryconfig(1, state=DISABLED)
-		# else:
-		# 	mainmenu.entryconfig(1, state=DISABLED)
-		# 	open_temp_window = 0
+			counter_info_window += 1
 
 	mainmenu = Menu(window)
 	window.config(menu=mainmenu)
-	global open_temp_window
-	open_temp_window = 0
 	mainmenu.add_command(label="О программе", command=about_program)
 
 	##--Исходящие сообщения(source_message)
+	global counter_source_window
+	counter_source_window = 0
 	def source_message():
+		"""Окно - Отправленные сообщения
+			Если окно открыто, то кнопка становится недоступной"""
 		global listbox_source
-		window_source_message = Toplevel(window)
-		window_source_message.title('Исходящие сообщения')
-		window_source_message.geometry('600x400+500+200')
-		listbox_source = Listbox(window_source_message, font=('Calibri', 12))
-		listbox_source.place(x=0, y=0, width=600, height=340)
-		for i in buffer_for_source_message:
-			listbox_source.insert(END, i)
+		global counter_source_window
+		if counter_source_window == 0:
+			window_source_message = Toplevel(window)
+			def close_window():
+				global counter_source_window
+				counter_source_window -= 1
+				window_source_message.destroy()
+				button_source_message.config(state='normal')
+			window_source_message.protocol("WM_DELETE_WINDOW", close_window)
+			window_source_message.title('Исходящие сообщения')
+			window_source_message.geometry('600x400+500+200')
+			listbox_source = Listbox(window_source_message, font=('Calibri', 12))
+			listbox_source.place(x=0, y=0, width=600, height=340)
+			counter_source_window += 1
+			button_source_message.config(state=DISABLED)
+			for i in buffer_for_source_message:
+				listbox_source.insert(END, i)
 
-	button_source_message = Button(window, text='Исходящие', command=source_message)
+	button_source_message = Button(window, text='Исходящие', command=source_message, state='normal')
 	button_source_message.place(x=600,y=200, width=100,height=40)
 	##----------------
 
 	##--Приходящие сообщения(destination_message)
+	global count_dest_window
+	count_dest_window = 0
 	def dest_message():
+		"""Окно - Пришедшие сообщения
+			Если окно открыто, то кнопка становится недоступной"""
 		global listbox_dest
-		window_dest_message = Toplevel(window)
-		window_dest_message.title('Приходящие сообщения')
-		window_dest_message.geometry('600x400+800+200')
-		listbox_dest = Listbox(window_dest_message, font=('Calibri', 12))
-		listbox_dest.place(x=0, y=0, width=600, height=340)
-		for i in buffer_for_dest_message:
-			listbox_dest.insert(END, i)
+		global count_dest_window
+		if count_dest_window == 0:
+			window_dest_message = Toplevel(window)
+			def close_window():
+				global count_dest_window
+				count_dest_window -= 1
+				window_dest_message.destroy()
+				button_dest_message.config(state='normal')
+			window_dest_message.protocol("WM_DELETE_WINDOW", close_window)
+			window_dest_message.title('Приходящие сообщения')
+			window_dest_message.geometry('600x400+800+200')
+			listbox_dest = Listbox(window_dest_message, font=('Calibri', 12))
+			listbox_dest.place(x=0, y=0, width=600, height=340)
+			button_dest_message.config(state=DISABLED)
+			for i in buffer_for_dest_message:
+				listbox_dest.insert(END, i)
+			count_dest_window += 1
 
-	button_dest_message = Button(window, text='Приходящие', command=dest_message)
+	button_dest_message = Button(window, text='Приходящие', command=dest_message, state='normal')
 	button_dest_message.place(x=600,y=250,width=100,height=40)
 	##---------------------
 

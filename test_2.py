@@ -46,10 +46,16 @@ window.config(menu=mainmenu)
 # open_temp_window = 0
 mainmenu.add_command(label="О программе", command=about_program)
 temp_window = Toplevel(window)
+if temp_window.state()=="normal":
+	print("wokawdo")
 temp_window = Toplevel(window)
 if mainmenu.master.children['!toplevel']:
 	print("OK")
 temp_window.destroy()
+if temp_window.state()=="normal":
+	print("KAOWDKoaKWD")
+else:
+	print("aowdjaod")
 # if len(mainmenu.master.children) == 1:
 if '!toplevel' not in mainmenu.master.children:
 	print("OK")
