@@ -25,9 +25,10 @@ if 0:
 
 def main():
 	ser = Serial()
-	configure_window(ser)
+	ok_button = configure_window(ser)
 	# ser.timeout = 2
-	chat(ser)
+	if ok_button:
+		chat(ser)
 
 
 if __name__== "__main__":

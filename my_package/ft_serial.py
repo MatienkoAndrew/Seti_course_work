@@ -95,6 +95,7 @@ class SerialBase(io.RawIOBase):
         self._buffer = []
         self._username = None
 
+        self.another_username = None
         # assign values using get/set methods using the properties feature
         self.port = port
         self.baudrate = baudrate
@@ -107,6 +108,7 @@ class SerialBase(io.RawIOBase):
         self.rtscts = rtscts
         self.dsrdtr = dsrdtr
         self.inter_byte_timeout = inter_byte_timeout
+
 
         ##-- Открываем порт
         if port is not None:

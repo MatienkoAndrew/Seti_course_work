@@ -16,19 +16,32 @@ def chat(ser):
 	out_flag = []
 
 
+	def give_username():
+		while ser.another_username == None:
+			time.sleep(1)
+			if ser.is_open:
+				ser.ft_write("Username" + str(ser.username))
+
+	## counter - счетчик(строчка в listbox)
+	## -- Отправленные сообщения таким образом становятся синими
+	global counter
+	counter = 0
 	def check_connect():
+		global counter
 		time.sleep(10)
 		while True:
 			if ser.is_open:
-				listbox.insert(END, datetime.strftime(datetime.now(), "%H:%M:%S") + " ACK_LINKACTIVE")
-				# ser.write("ACK_LINKACTIVE\r\n".encode('utf-8'))
+				listbox.insert(END, "[" + datetime.strftime(datetime.now(), "%H:%M:%S") +"] " + "ACK_LINKACTIVE")
+				listbox.itemconfig(counter, {'fg': 'gray'})
 				ser.ft_write("ACK_LINKACTIVE")
+				counter += 1
 				time.sleep(10)
 
 	global in_st
 	in_st = []
 	# функция приема строки
 	def fn_in():
+		global counter
 		global in_list
 		global in_st
 		while 1:
@@ -36,55 +49,55 @@ def chat(ser):
 				# --ждем прихода к нам строки
 				while ser.in_waiting > 0:
 					if ser.is_open:
-						# window.after(10000, check_connect)
-						# in_st = ser.readline()
 						data_to_read = ser.in_waiting
 						in_st = ser.ft_read(data_to_read)
-						# if in_st == b"ACK_LINKACTIVE\r\n":
 						if in_st == "ACK_LINKACTIVE":
-							listbox.insert(END,  datetime.strftime(datetime.now(), "%H:%M:%S") + " LINKACTIVE")
+							listbox.insert(END, "[" + datetime.strftime(datetime.now(), "%H:%M:%S") + "]" + " LINKACTIVE")
+							listbox.itemconfig(counter, {'fg': 'gray'})
+							counter += 1
+							in_st = []
+						elif in_st[:8] == "Username":
+							ser.another_username = in_st[8:]
 							in_st = []
 						else:
-							# if in_st != b'':
 							if in_st != '':
 								in_list.append(in_st)
 				time.sleep(1)   ##-- CPU не будет нагреваться до 100C
-						# in_len = len(in_st)
-				## -- ждем освобождения входного буфера и записываем в него
-				# if ser.is_open:
-				# 	if in_st != []:
-				# 		in_list.append(in_st)
-				# 	time.sleep(1)
 
 	## -- запустить поток приема
 	global start_thread
 	start_thread = 0
 	tr_in = threading.Thread(target=fn_in)
 	tr_in.daemon = True
-	# tr_in.start()
 
 	thread_2 = threading.Thread(target=check_connect)
 	thread_2.daemon = True
+
+	thread_3_name = threading.Thread(target=give_username)
+	thread_3_name.daemon = True
 
 	## -- запустить основной поток
 	def fn_out():
 		global out_flag
 		out_flag = 1
 
-	##--Отправление сообщений(через кнопку "Отправить"
+	##--Отправление сообщений через кнопку "Отправить"
 	global buffer_for_source_message
 	buffer_for_source_message = []
 
+
 	def fn_send():
+		global counter
 		# global user_name
 		out_st = enter.get()
 		if len(out_st) > 0:
-			# ser.write((out_st + '\r\n').encode('utf-8'))
 			ser.ft_write((out_st + '\r\n'))
-			listbox.insert(END, ser.username + ": " + out_st)
-			buffer_for_source_message.append(ser.username + ": " + out_st)
+			listbox.insert(END, "[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ser.username + ": " + out_st)
+			listbox.itemconfig(counter, {'fg': 'blue'})
+			counter += 1
+			buffer_for_source_message.append("[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ser.username + ": " + out_st)
 			try:
-				listbox_source.insert(END, ser.username + ": " + out_st)
+				listbox_source.insert(END, "[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ser.username + ": " + out_st)
 			except:
 				print("Source message window is closed")
 		enter.delete(0, END)
@@ -94,11 +107,20 @@ def chat(ser):
 	buffer_for_dest_message = []
 
 	def fn_disp():
+		global counter
 		global out_flag
 		while len(in_list) > 0:
 			st = in_list.pop(0)
-			listbox.insert(END, st)
-			buffer_for_dest_message.append(st)
+			if ser.another_username != None:
+				listbox.insert(END, "[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ser.another_username + ": " + st)
+				listbox.itemconfig(counter, {'fg': 'red'})
+				counter += 1
+				buffer_for_dest_message.append("[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ser.another_username + ": " + st)
+			else:
+				listbox.insert(END, "[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ">>> " + st)
+				listbox.itemconfig(counter, {'fg': 'red'})
+				counter += 1
+				buffer_for_dest_message.append("[" + datetime.strftime(datetime.now(), "%H:%M:%S")+ "] " + ">>> " + st)
 			try:
 				listbox_dest.insert(END, st)
 			except:
@@ -123,6 +145,7 @@ def chat(ser):
 	enter.place(x=0, y=340, width=600, height=40)
 
 	def open_port():
+		global counter
 		global tr_in
 		global start_thread
 		state = DISABLED
@@ -132,10 +155,11 @@ def chat(ser):
 				listbox.insert(END, "Port " + ser.port + " is opened")
 				button_open.config(text="Закрыть порт")
 				button_display.config(state=NORMAL)
-				# if tr_in._started._flag == False:
+				counter += 1
 				if start_thread == 0:
 					tr_in.start()
 					thread_2.start()
+					thread_3_name.start()
 					start_thread = 1
 		else:
 			ser.close()
@@ -143,6 +167,7 @@ def chat(ser):
 				listbox.insert(END, "Port " + ser.port + " is closed")
 				button_open.config(text="Открыть порт")
 				button_display.config(state=DISABLED)
+				counter += 1
 	button_open = Button(window, text="Открыть порт", command=open_port)
 	button_open.focus_set()
 	button_open.place(x=600,y=0, width=100, height=40)

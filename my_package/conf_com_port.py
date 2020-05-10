@@ -8,6 +8,9 @@ from serial.tools import list_ports
 from my_package.validation import validation, cut_port_name
 
 def configure_window(ser):
+	global ok_button
+	ok_button = False
+
 	"""Создание окна настроек параметров"""
 	conf_window = Tk()
 	conf_window.geometry('500x300')
@@ -61,14 +64,18 @@ def configure_window(ser):
 	bit_stop.grid(row=5, column=1)
 
 	##-- Настройки сохраняются
-	def clicked():
+	def clicked(event):
+		global ok_button
 		if validation(name, com_port, speed_b, size_b, parity_b, bit_stop, ser):
 			conf_window.destroy()
+			ok_button = True
+
 
 	"""Кнопка завершения настроек"""
 	button = Button(conf_window, text="OK", command=clicked)
-	# button.focus_set()
-	# button.bind('<Button-1>', clicked)
-	# button.bind('<Return>', clicked)
+	button.focus_set()
+	button.bind('<Button-1>', clicked)
+	button.bind('<Return>', clicked)
 	button.grid(column=2)
 	conf_window.mainloop()
+	return ok_button
